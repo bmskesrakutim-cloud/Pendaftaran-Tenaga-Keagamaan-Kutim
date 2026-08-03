@@ -2,23 +2,8 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pendaftaran Tenaga Keagamaan Kutai Timur</title>
-    
-    <!-- PWA & Hybrid App Meta Tags -->
-    <meta name="theme-color" content="#15803d">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Daftar Kutim">
-    <meta name="application-name" content="Daftar Kutim">
-    
-    <!-- Inline Apple Touch Icon (SVG to Data URI for portability) -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxOTIgMTkyJz48cmVjdCB3aWR0aD0nMTkyJyBoZWlnaHQ9JzE5MicgZmlsbD0nIzE1ODAzZCc8L3JlY3Q+PHRleHQgeD0nOTYnIHk9JzEwNScgZmlsbD0nI2ZmZicgZm9udC1mYW1pbHk9J3NhbnMtc2VyaWYnIGZvbnQtc2l6ZT0nNDUnIGZvbnQtd2VpZ2h0PSdib2xkJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJz5LdXRpbTwvdGV4dD48L3N2Zz4=">
-    
-    <!-- Embedded Manifest JSON for PWA Installation -->
-    <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiUGVuZGFmdGFyYW4gVGVuYWdhIEtlYWdhbWFhbiBLdXRhaSBUaW11ciIsInNob3J0X25hbWUiOiJEYWZ0YXIgS3V0aW0iLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI2YzZjRmNiIsInRoZW1lX2NvbG9yIjoiIzE1ODAzZCIsImRlc2NyaXB0aW9uIjoiUGVuZGFmdGFyYW4gVGVuYWdhIEtlYWdhbWFhbiBLdXRhaSBUaW11ciAyMDI3IiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjRiV3h1Y3owbmFIUjBjRG92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jbklIWnBaWGRDYjNnOVNUQWdNQ0ExTVRJZ05URXlKeTU4Y21WamRDQjNhV1IwYUQwbk5URXlKMmdoYUdWcFoyaDBGU2MxTVRJbklHWmxiR3dwSnlNeE5UZ3dNMlFuUEM5clpXTjBQangwWlhoMElIZzlKekkxTmljZ2VUMGlNamN3SnlCbWFXeHNQU2dqWm1abUp5Qm1iMjUwTFdaaGJXbHNlVDBuYzJGdWN5MXpaWEpwWmljZ1ptOXVkQzF6YVhwbFBTY3hNakFuSUdadmJuUXRkMlZwWjJoMFBTZGliMnhrSnlCMFpYaDBMV0Z1WTJodmNqMG1iV2xrWUd4bEp6cExkWFJwYlR3dmRHVjRkRDQ4TDMzMnp6ND0iLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCIsInB1cnBvc2UiOiJhbnkgbWFza2FibGUifSx7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjRiV3h1Y3owbmFIUjBjRG92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jbklIWnBaWGRDYjNnOVNUQWdNQ0F4T1RJZ01Ua3lKeTU4Y21WamRDQjNhV1IwYUQwbk1Ua3lKMmdoYUdWcFoyaDBGU2N4T1RJbklHWmxiR3dwSnlNeE5UZ3dNMlFuUEM5clpXTjBQangwWlhoMElIZzlKemsySnlnZVQwbk1UQTFKMmdabWxzYkQwbkkyWm1aaWNnWm05dWRDMHdabUZ0YVd4NVBTZHpZVzV6TFhObGNtbG1KeUdtYjI1MExYTnBlbVU5SnpRMUp5Qm1iMjUwTFhkbGFXZG9kRDBuWW05c1pDY2dkR1Y0ZEMxaGJtTm9iM0k5SjIxcFpHUnNaU2MrS3V0aW08L3RleHQ+PC9zdmc+"," sizes="192x192" type="image/svg+xml" purpose="any maskable" }]}">
-    
     <!-- Tailwind CSS untuk Styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- SweetAlert2 untuk Pop up Notifikasi -->
@@ -28,8 +13,6 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        /* Prevent pull-to-refresh on mobile for better app-like feel */
-        html, body { overscroll-behavior-y: contain; }
     </style>
 </head>
 <body class="text-gray-800 antialiased min-h-screen flex flex-col">
@@ -497,28 +480,34 @@
             networkStatusEl.classList.add('flex');
 
             if (navigator.onLine && !isForceOfflineMode) {
+                // Online State
                 networkTextEl.textContent = "anda terhubung dengan jaringan";
                 networkIconEl.innerHTML = '<i class="fas fa-wifi"></i>';
                 networkStatusEl.className = "fixed top-4 right-4 z-50 px-4 py-2 rounded-full font-semibold shadow-md transition-colors duration-300 flex items-center gap-2 bg-green-100 text-green-800 border border-green-300 cursor-default";
                 networkStatusEl.onclick = null;
                 applyThemeColor('green');
                 
+                // Mengizinkan Pull to refresh kembali (Overscroll aktif)
                 document.body.style.overscrollBehaviorY = 'auto';
                 document.documentElement.style.overscrollBehaviorY = 'auto';
                 
+                // Coba sinkronisasi jika ada data tertunda
                 syncPendingData();
             } else {
+                // Offline State (atau dipaksa offline)
                 networkTextEl.textContent = "anda tidak tehubung jaringan";
                 networkIconEl.innerHTML = '<i class="fas fa-wifi-slash"></i>';
                 networkStatusEl.className = "fixed top-4 right-4 z-50 px-4 py-2 rounded-full font-semibold shadow-md transition-colors duration-300 flex items-center gap-2 bg-orange-100 text-orange-800 border border-orange-400 cursor-pointer hover:bg-orange-200 animate-pulse";
                 networkStatusEl.onclick = forceOffline;
                 applyThemeColor('orange');
                 
+                // Mencegah Pull to refresh sistem (CSS Fallback Lock)
                 document.body.style.overscrollBehaviorY = 'none';
                 document.documentElement.style.overscrollBehaviorY = 'none';
             }
         }
 
+        // Listener saat browser mendeteksi perubahan jaringan secara otomatis
         window.addEventListener('online', () => {
             isForceOfflineMode = false;
             updateUIStatus();
@@ -527,6 +516,7 @@
             updateUIStatus(); 
         });
 
+        // 1. Mencegah user me-refresh halaman (Via tombol Browser Refresh / Tutup tab)
         window.addEventListener('beforeunload', (e) => {
             const isCurrentlyOffline = !navigator.onLine || isForceOfflineMode;
             if (isCurrentlyOffline) {
@@ -535,6 +525,7 @@
             }
         });
 
+        // 2. Mencegah Refresh dari Keyboard PC (F5, Ctrl+R, Cmd+R)
         window.addEventListener('keydown', function(e) {
             const isCurrentlyOffline = !navigator.onLine || isForceOfflineMode;
             if (isCurrentlyOffline) {
@@ -547,6 +538,7 @@
             }
         });
 
+        // 3. Mencegah Gesture Pull-to-Refresh di Android dan iOS (Touch Swipe Down)
         let lastTouchY = 0;
         window.addEventListener('touchstart', function(e) {
             lastTouchY = e.touches[0].clientY;
@@ -557,8 +549,9 @@
             if (isCurrentlyOffline) {
                 const touchY = e.touches[0].clientY;
                 const touchDiff = touchY - lastTouchY;
+                // Jika posisi scroll ada di paling atas (0) dan user menarik ke bawah (pull down)
                 if (touchDiff > 0 && window.scrollY === 0) {
-                    e.preventDefault(); 
+                    e.preventDefault(); // Batalkan aksi default browser (refresh)
                 }
             }
         }, { passive: false });
@@ -620,6 +613,7 @@
             }
         }
 
+        // Inisialisasi awal saat halaman dimuat
         document.addEventListener('DOMContentLoaded', () => {
             initIndexedDB().then(() => {
                 updateUIStatus();
@@ -998,28 +992,16 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                // Diperbarui agar memprioritaskan cache aset CDN untuk fungsi PWA Hybrid yang lebih kuat
                 const swCode = `
-                    const CACHE_NAME = 'kutim-pwa-v3';
-                    const PRECACHE_URLS = [
-                        './',
-                        'index.html',
-                        'https://cdn.tailwindcss.com',
-                        'https://cdn.jsdelivr.net/npm/sweetalert2@11',
-                        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
-                        'https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700&display=swap'
-                    ];
-
+                    const CACHE_NAME = 'kutim-pwa-v2';
                     self.addEventListener('install', event => {
                         event.waitUntil(
                             caches.open(CACHE_NAME).then(cache => {
-                                // Pre-cache everything needed for offline view
-                                return cache.addAll(PRECACHE_URLS).catch(err => console.log('Partial cache: ', err));
+                                return cache.addAll(['./', 'index.html']).catch(() => {});
                             })
                         );
                         self.skipWaiting();
                     });
-
                     self.addEventListener('activate', event => {
                         event.waitUntil(
                             caches.keys().then(keys => Promise.all(
@@ -1027,45 +1009,29 @@
                             )).then(() => self.clients.claim())
                         );
                     });
-
                     self.addEventListener('fetch', event => {
                         if (event.request.method !== 'GET') return;
-                        
                         event.respondWith(
                             caches.match(event.request).then(cachedResponse => {
                                 if (cachedResponse) {
-                                    // Update cache in background when possible
                                     fetch(event.request).then(networkResponse => {
                                         if (networkResponse && networkResponse.status === 200) {
-                                            caches.open(CACHE_NAME).then(cache => cache.put(event.request, networkResponse.clone()));
+                                            caches.open(CACHE_NAME).then(cache => cache.put(event.request, networkResponse));
                                         }
                                     }).catch(() => {});
                                     return cachedResponse;
                                 }
-                                
-                                // Return network response and cache it
-                                return fetch(event.request).then(networkResponse => {
-                                    if (networkResponse && networkResponse.status === 200) {
-                                        const responseToCache = networkResponse.clone();
-                                        caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseToCache));
-                                    }
-                                    return networkResponse;
-                                }).catch(() => {
-                                    // Fallbacks when completely offline and item not in cache
-                                    return caches.match('index.html') || caches.match('./');
-                                });
+                                return fetch(event.request).catch(() => caches.match('index.html') || caches.match('./'));
                             })
                         );
                     });
                 `;
-                
                 try {
                     const blob = new Blob([swCode], { type: 'application/javascript' });
                     const swBlobUrl = URL.createObjectURL(blob);
                     navigator.serviceWorker.register(swBlobUrl).then(reg => {
-                        console.log('Service Worker PWA Offline Ready & Hybrid Mode Enabled');
+                        console.log('Service Worker PWA Offline Ready');
                     }).catch(err => {
-                        console.warn('Failed Blob SW, attempting root file', err);
                         navigator.serviceWorker.register('/sw.js').catch(() => {});
                     });
                 } catch(e) {
