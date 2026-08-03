@@ -1032,10 +1032,12 @@
                     navigator.serviceWorker.register(swBlobUrl).then(reg => {
                         console.log('Service Worker PWA Offline Ready');
                     }).catch(err => {
-                        navigator.serviceWorker.register('/sw.js').catch(() => {});
+                        // PERBAIKAN: Menghapus fallback pemanggilan /sw.js yang menyebabkan Error HTTP 404
+                        console.warn('Pendaftaran Service Worker via Blob diblokir browser. Untuk PWA Offline penuh, gunakan file sw.js terpisah.');
                     });
                 } catch(e) {
-                    navigator.serviceWorker.register('/sw.js').catch(() => {});
+                    // PERBAIKAN: Menghapus fallback pemanggilan /sw.js yang menyebabkan Error HTTP 404
+                    console.warn('Browser tidak mendukung metode ini.');
                 }
             });
         }
