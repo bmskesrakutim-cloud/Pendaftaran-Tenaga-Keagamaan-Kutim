@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pendaftaran Tenaga Keagamaan Kutai Timur</title>
-    <!-- SOLUSI 1: Menambahkan Inline Favicon untuk mematikan error favicon.ico 404 -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>">
-    
     <!-- Tailwind CSS untuk Styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- SweetAlert2 untuk Pop up Notifikasi -->
@@ -993,23 +990,53 @@
 
     <!-- PWA Service Worker Registration -->
     <script>
-        // SOLUSI 2: PERBAIKAN TOTAL UNTUK ERROR 404 sw.js
-        // Kita mencabut (unregister) secara paksa Service Worker lama yang tersangkut (cache) di browser. 
-        // Ini akan menghentikan browser yang terus-terusan mencari file sw.js di background.
-        // Catatan: Fitur simpan data Offline (IndexedDB) akan TETAP BERJALAN normal tanpa Service Worker ini.
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                    for(let registration of registrations) {
-                        registration.unregister().then(function(isUnregistered) {
-                            if(isUnregistered) {
-                                console.log('Service Worker lama berhasil dicabut. Error 404 sw.js telah dihentikan.');
-                            }
-                        });
-                    }
-                }).catch(function(error) {
-                    console.warn('Gagal memproses penghapusan Service Worker:', error);
-                });
+                const swCode = `
+                    const CACHE_NAME = 'kutim-pwa-v2';
+                    self.addEventListener('install', event => {
+                        event.waitUntil(
+                            caches.open(CACHE_NAME).then(cache => {
+                                return cache.addAll(['./', 'index.html']).catch(() => {});
+                            })
+                        );
+                        self.skipWaiting();
+                    });
+                    self.addEventListener('activate', event => {
+                        event.waitUntil(
+                            caches.keys().then(keys => Promise.all(
+                                keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+                            )).then(() => self.clients.claim())
+                        );
+                    });
+                    self.addEventListener('fetch', event => {
+                        if (event.request.method !== 'GET') return;
+                        event.respondWith(
+                            caches.match(event.request).then(cachedResponse => {
+                                if (cachedResponse) {
+                                    fetch(event.request).then(networkResponse => {
+                                        if (networkResponse && networkResponse.status === 200) {
+                                            caches.open(CACHE_NAME).then(cache => cache.put(event.request, networkResponse));
+                                        }
+                                    }).catch(() => {});
+                                    return cachedResponse;
+                                }
+                                return fetch(event.request).catch(() => caches.match('index.html') || caches.match('./'));
+                            })
+                        );
+                    });
+                `;
+                try {
+                    const blob = new Blob([swCode], { type: 'application/javascript' });
+                    const swBlobUrl = URL.createObjectURL(blob);
+                    navigator.serviceWorker.register(swBlobUrl).then(reg => {
+                        console.log('Service Worker PWA Offline Ready');
+                    }).catch(err => {
+                        navigator.serviceWorker.register('/sw.js').catch(() => {});
+                    });
+                } catch(e) {
+                    navigator.serviceWorker.register('/sw.js').catch(() => {});
+                }
             });
         }
     </script>
