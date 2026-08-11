@@ -118,7 +118,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Rekening BPD (Konvensional)</label>
-                        <input type="text" id="rekening"  placeholder="12345678 / Muhammad" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none transition-colors duration-300">
+                        <input type="text" id="rekening" placeholder="1234567890 / Muhammad" maxlength="60" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none transition-colors duration-300">
                     </div>
                 </div>
 
@@ -318,6 +318,53 @@
     </main>
 
     <script>
+        function formatRekeningBPD(event) {
+        let input = event.target;
+        let rawValue = input.value;
+        
+        // 1. Pisahkan input berdasarkan tanda garis miring "/" (jika ada)
+        let splitIndex = rawValue.indexOf('/');
+        let part1 = rawValue;
+        let part2 = "";
+        
+        if (splitIndex !== -1) {
+            part1 = rawValue.substring(0, splitIndex);
+            part2 = rawValue.substring(splitIndex + 1);
+        }
+        
+        // 2. Ambil maksimal 10 ANGKA dari bagian pertama
+        // \D menghapus semua selain angka
+        let rek = part1.replace(/\D/g, '').substring(0, 10);
+        
+        // 3. Ambil sisa karakter (HURUF) untuk bagian nama
+        // Regex /[^a-zA-Z\s.,']/g mengizinkan huruf, spasi, titik, koma, dan tanda kutip (untuk gelar/singkatan nama)
+        let extraLetters = part1.substring(rek.length).replace(/[^a-zA-Z\s.,']/g, '');
+        let nameLetters = part2.replace(/[^a-zA-Z\s.,']/g, '');
+        
+        // 4. Gabungkan nama dan hapus spasi berlebih di awal (mencegah double spasi)
+        let name = (extraLetters + nameLetters).replace(/^\s+/, ''); 
+        
+        // 5. Susun ulang format input
+        if (rek.length === 10) {
+            if (name.length > 0) {
+                // Jika angka sudah 10 dan user mulai mengetik huruf, otomatis tambahkan " / "
+                input.value = rek + ' / ' + name;
+            } else {
+                // Jika belum ada huruf (misal user sedang menghapus nama / backspace)
+                // Kita pertahankan tanda slash atau spasi agar cursor tidak error/nyangkut
+                let suffix = rawValue.substring(rek.length).replace(/[^/ ]/g, '');
+                if (suffix.length > 3) suffix = suffix.substring(0, 3);
+                input.value = rek + suffix;
+            }
+        } else {
+            // Jika angka belum mencapai 10 digit, paksa user hanya bisa input angka
+            input.value = rek;
+        }
+    }
+
+    // Pasang event listener ke elemen Rekening
+    document.getElementById('rekening').addEventListener('input', formatRekeningBPD);
+
         // Fungsi untuk memformat input ID Masjid
     function formatIdMasjid(event) {
         let input = event.target;
