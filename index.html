@@ -17,6 +17,7 @@
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
     </style>
 </head>
@@ -170,6 +171,45 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- FITUR BARU: UJIAN MEMBACA QURAN -->
+                <div id="dynamic-ujian" class="hidden bg-green-50 p-6 rounded-lg border border-green-200 space-y-4 shadow-sm mb-6 mt-6">
+                    <h3 class="text-lg font-bold text-green-900 border-b border-green-200 pb-2"><i class="fas fa-microphone-alt mr-2"></i>Ujian Membaca Al-Qur'an (Wajib)</h3>
+                    <div class="text-sm text-green-800 mb-4 bg-white p-4 rounded-lg border border-green-100 shadow-inner">
+                        Sebagai syarat wajib, Anda diminta untuk merekam suara (audio) secara langsung saat membaca potongan ayat suci Al-Qur'an yang diacak otomatis oleh sistem. 
+                        <br><br><span class="text-red-600 font-bold"><i class="fas fa-exclamation-triangle mr-1"></i>Peringatan Sangat Penting:</span> Ujian ini <b>hanya dapat dilakukan 1 kali</b> dan tombol akan terkunci secara permanen setelah Anda menghentikan rekaman. Pastikan Anda berada di tempat yang tenang, berikan izin akses mikrofon pada browser, dan persiapkan diri Anda sebelum menekan tombol di bawah ini.
+                    </div>
+                    
+                    <button type="button" id="btn-generate-ujian" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-bold transition flex items-center justify-center shadow-md">
+                        <i class="fas fa-quran mr-2"></i> Munculkan Ayat & Bersiap Rekam
+                    </button>
+
+                    <div id="ujian-area" class="hidden flex-col mt-4 p-6 bg-white rounded-xl border border-gray-200 shadow-md">
+                        <!-- Tampilan Ayat yang Lebih Modern dan Rapi -->
+                        <div id="ayat-display" class="text-right text-3xl md:text-4xl text-gray-900 font-bold" dir="rtl" style="font-family: 'Amiri', serif; line-height: 2.8; word-spacing: 0.15em; padding: 15px;">
+                            <!-- Ayat akan dirender di sini via JS -->
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row gap-4 items-center justify-center pt-6 border-t border-gray-100 w-full mt-4">
+                            <button type="button" id="btn-start-record" class="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-full font-bold shadow-md transition flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-red-300">
+                                <i class="fas fa-circle mr-2 text-xs"></i> Mulai Merekam
+                            </button>
+                            <button type="button" id="btn-stop-record" class="w-full sm:w-auto bg-gray-400 text-white px-8 py-3 rounded-full font-bold shadow-md transition flex items-center justify-center cursor-not-allowed focus:outline-none" disabled>
+                                <i class="fas fa-stop mr-2"></i> Selesai
+                            </button>
+                        </div>
+
+                        <!-- Audio Playback -->
+                        <div id="audio-playback-container" class="hidden mt-6 text-center bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <p class="text-sm font-semibold text-green-700 mb-3"><i class="fas fa-check-circle mr-1"></i>Rekaman berhasil disimpan secara internal. Putar ulang hasil rekaman Anda:</p>
+                            <audio id="audio-playback" controls class="w-full max-w-md mx-auto outline-none"></audio>
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" id="ayat_ujian_text">
+                    <input type="hidden" id="rekaman_base64">
+                </div>
+                <!-- AKHIR FITUR BARU -->
 
                 <div class="pt-4 border-t border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Upload Berkas Wajib (Format: JPG/PNG/PDF)</h3>
@@ -464,7 +504,7 @@
             };
         }
 
-        const CONFIG_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwZvVFHrlY96WmSp_d05SoMdpWRBWHGfidS7eO6d_x4o_qo-u747AjaJWY7V6iRxH-lIQ/exec";
+        const CONFIG_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwpxD3pKKrMdbND9277ZfKdyShF4cMew5rmmlACLOJudBJbWiVWKAjo5Xyr1f9TjME5AQ/exec";
 
         const DB_NAME = 'OfflineRegistrationDB';
         const DB_VERSION = 1;
@@ -759,6 +799,148 @@
             ]
         };
 
+        // --- FITUR BARU: LOGIKA UJIAN QURAN & REKAMAN AUDIO ---
+        let isTestGenerated = false;
+        let mediaRecorder;
+        let audioChunks = [];
+
+        const fallbackAyahs = [
+            { text: "قُلْ هُوَ ٱللَّهُ أَحَدٌ ۝ ٱللَّهُ ٱلصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ", info: "Al-Ikhlas (Ayat 1-4)" },
+            { text: "قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ ۝ مِن شَرِّ مَا خَلَقَ ۝ وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ", info: "Al-Falaq (Ayat 1-3)" },
+            { text: "قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ ۝ مَلِكِ ٱلنَّاسِ ۝ إِلَـٰهِ ٱلنَّاسِ", info: "An-Nas (Ayat 1-3)" },
+            { text: "إِنَّآ أَعْطَيْنَـٰكَ ٱلْكَوْثَرَ ۝ فَصَلِّ لِرَبِّكَ وَٱنْحَرْ ۝ إِنَّ شَانِئَكَ هُوَ ٱلْأَبْتَرُ", info: "Al-Kawthar (Ayat 1-3)" }
+        ];
+
+        document.getElementById('btn-generate-ujian').addEventListener('click', async function() {
+            if(isTestGenerated) return;
+            
+            if (typeof MediaRecorder === 'undefined') {
+                Swal.fire('Browser Tidak Didukung', 'Browser Anda tidak mendukung perekaman suara (MediaRecorder API). Harap gunakan Google Chrome, Safari terbaru, atau Mozilla Firefox.', 'error');
+                return;
+            }
+            
+            try {
+                // Meminta izin mikrofon terlebih dahulu
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                this.disabled = true;
+                this.classList.add('opacity-50', 'cursor-not-allowed');
+                this.innerHTML = '<i class="fas fa-lock mr-2"></i> Ujian Terkunci (Satu Kali)';
+                
+                Swal.fire({ title: 'Menyiapkan Ayat...', text: 'Sistem sedang mengacak ayat untuk Anda', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                
+                let arabicText = "";
+                let infoText = "";
+                
+                try {
+                    if (!navigator.onLine) throw new Error("Offline");
+                    
+                    // Acak ayat dari 1 sampai 6236
+                    let rand = Math.floor(Math.random() * 6236) + 1;
+                    let res = await fetch(`https://api.alquran.cloud/v1/ayah/${rand}/quran-uthmani`);
+                    if(!res.ok) throw new Error("API Error");
+                    let data = await res.json();
+                    
+                    let ayahs = [data.data];
+                    
+                    // Jika ayat sangat pendek (<60 karakter) & bukan akhir surah, gabungkan dgn ayat berikutnya agar cukup diuji
+                    if (data.data.text.length < 60 && data.data.numberInSurah < data.data.surah.numberOfAyahs) {
+                        let res2 = await fetch(`https://api.alquran.cloud/v1/ayah/${rand + 1}/quran-uthmani`);
+                        if(res2.ok) {
+                            let data2 = await res2.json();
+                            ayahs.push(data2.data);
+                        }
+                    }
+                    
+                    // Memformat tampilan ayat dan nomor urut akhir ayat dengan rapi
+                    arabicText = ayahs.map(a => `${a.text} <span class="inline-flex items-center justify-center w-10 h-10 rounded-full border border-green-700 text-sm mx-2 bg-green-50 text-green-900 font-sans font-bold" dir="ltr">${a.numberInSurah}</span>`).join(' ');
+                    infoText = `Surah ${ayahs[0].surah.englishName} (Ayat ${ayahs.map(a => a.numberInSurah).join(', ')})`;
+                    
+                } catch(err) {
+                    // Fallback jika API gagal / offline
+                    const fb = fallbackAyahs[Math.floor(Math.random() * fallbackAyahs.length)];
+                    arabicText = fb.text.replace(/۝/g, '<span class="inline-flex items-center justify-center w-10 h-10 rounded-full border border-green-700 text-sm mx-2 bg-green-50 text-green-900 font-sans font-bold">Ayat</span>');
+                    infoText = fb.info;
+                }
+                
+                document.getElementById('ayat-display').innerHTML = `<div class="mb-6">${arabicText}</div><div class="text-sm font-sans font-semibold text-green-700 text-center mt-6 border-t border-gray-100 pt-4"><i class="fas fa-book-open mr-2"></i>${infoText}</div>`;
+                document.getElementById('ayat_ujian_text').value = infoText;
+                
+                document.getElementById('ujian-area').classList.remove('hidden');
+                document.getElementById('ujian-area').classList.add('flex');
+                
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = e => {
+                    if(e.data.size > 0) audioChunks.push(e.data);
+                };
+                mediaRecorder.onstop = () => {
+                    const mimeType = mediaRecorder.mimeType || 'audio/webm';
+                    const audioBlob = new Blob(audioChunks, { type: mimeType });
+                    
+                    const reader = new FileReader();
+                    reader.readAsDataURL(audioBlob);
+                    reader.onloadend = () => {
+                        // Simpan hasil base64 audio ke input hidden untuk di-submit
+                        document.getElementById('rekaman_base64').value = reader.result;
+                        
+                        // Buat URL untuk playback
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        document.getElementById('audio-playback').src = audioUrl;
+                        document.getElementById('audio-playback-container').classList.remove('hidden');
+                        
+                        // Matikan akses mic sepenuhnya
+                        stream.getTracks().forEach(track => track.stop());
+                    }
+                };
+                
+                isTestGenerated = true;
+                Swal.close();
+                
+            } catch (e) {
+                Swal.fire('Izin Mikrofon Ditolak', 'Gagal mengakses mikrofon perangkat. Pastikan Anda telah memberikan izin (Allow Microphone) di browser Anda untuk dapat mengikuti ujian ini.', 'error');
+            }
+        });
+
+        document.getElementById('btn-start-record').addEventListener('click', function() {
+            if(mediaRecorder && mediaRecorder.state === "inactive") {
+                audioChunks = [];
+                mediaRecorder.start();
+                
+                this.disabled = true;
+                this.classList.replace('bg-red-500', 'bg-gray-200');
+                this.classList.replace('hover:bg-red-600', 'cursor-not-allowed');
+                this.classList.replace('text-white', 'text-gray-500');
+                this.innerHTML = `<i class="fas fa-microphone fa-beat mr-2 text-red-600"></i> Sedang Merekam...`;
+                
+                const stopBtn = document.getElementById('btn-stop-record');
+                stopBtn.disabled = false;
+                stopBtn.classList.replace('bg-gray-400', 'bg-red-600');
+                stopBtn.classList.replace('cursor-not-allowed', 'hover:bg-red-700');
+            }
+        });
+
+        document.getElementById('btn-stop-record').addEventListener('click', function() {
+            if(mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+                
+                this.disabled = true;
+                this.classList.replace('bg-red-600', 'bg-gray-400');
+                this.classList.replace('hover:bg-red-700', 'cursor-not-allowed');
+                this.innerHTML = `<i class="fas fa-lock mr-2"></i> Rekaman Selesai`;
+                
+                document.getElementById('btn-start-record').innerHTML = `<i class="fas fa-check mr-2"></i> Terkunci`;
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Rekaman Disimpan',
+                    text: 'Anda dapat memutar ulang hasil rekaman di bawah ini. Silakan lanjutkan ke pengisian formulir selanjutnya.',
+                    timer: 3500,
+                    showConfirmButton: false
+                });
+            }
+        });
+        // --- AKHIR FITUR BARU ---
+
         document.getElementById('kecamatan').addEventListener('change', function() {
             const kecamatanTerpilih = this.value;
             const desaSelect = document.getElementById('desa');
@@ -777,19 +959,28 @@
 
         document.getElementById('peran').addEventListener('change', function() {
             const val = this.value;
-            const sections = ['dynamic-masjid', 'dynamic-gereja', 'berkas-tambahan-masjid', 'berkas-tambahan-gereja', 'berkas-tambahan-pembangunan'];
-            sections.forEach(id => document.getElementById(id).classList.add('hidden'));
+            // Menyertakan ID form ujian agar ikut di hide saat ganti pilihan
+            const sections = ['dynamic-masjid', 'dynamic-gereja', 'berkas-tambahan-masjid', 'berkas-tambahan-gereja', 'berkas-tambahan-pembangunan', 'dynamic-ujian'];
+            sections.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.classList.add('hidden');
+            });
             document.querySelectorAll('.dynamic-input').forEach(el => el.required = false);
 
             if (val === 'Marbot Masjid' || val === 'Imam Masjid') {
                 document.getElementById('dynamic-masjid').classList.remove('hidden');
                 document.getElementById('berkas-tambahan-masjid').classList.remove('hidden');
+                document.getElementById('dynamic-ujian').classList.remove('hidden'); // Munculkan Ujian Quran
                 document.querySelectorAll('.req-masjid').forEach(el => el.required = true);
             } else if (val === 'Pendeta') {
                 document.getElementById('dynamic-gereja').classList.remove('hidden');
                 document.getElementById('berkas-tambahan-gereja').classList.remove('hidden');
                 document.querySelectorAll('.req-gereja').forEach(el => el.required = true);
-            } else if (val === 'Dai Pembangunan' || val === 'Rohaniawan Pembangunan') {
+            } else if (val === 'Dai Pembangunan') {
+                document.getElementById('berkas-tambahan-pembangunan').classList.remove('hidden');
+                document.getElementById('dynamic-ujian').classList.remove('hidden'); // Munculkan Ujian Quran
+                document.querySelectorAll('.req-pembangunan').forEach(el => el.required = true);
+            } else if (val === 'Rohaniawan Pembangunan') {
                 document.getElementById('berkas-tambahan-pembangunan').classList.remove('hidden');
                 document.querySelectorAll('.req-pembangunan').forEach(el => el.required = true);
             }
@@ -925,6 +1116,19 @@
             const nama = document.getElementById('nama').value.toUpperCase();
             const timestamp = new Date().toLocaleString('id-ID');
             
+            // Validasi Blok Ujian Quran Wajib
+            const rolesWithTest = ['Dai Pembangunan', 'Marbot Masjid', 'Imam Masjid'];
+            if (rolesWithTest.includes(peran)) {
+                if (!document.getElementById('rekaman_base64').value) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Ujian Belum Selesai',
+                        text: 'Sebagai persyaratan mutlak, Anda harus memunculkan ayat dan merekam suara Anda pada bagian "Ujian Membaca Al-Qur\'an" di atas sebelum mengirim formulir.'
+                    });
+                    return;
+                }
+            }
+
             const dataText = {
                 timestamp: timestamp,
                 nama: nama,
@@ -940,7 +1144,8 @@
                 peran: peran,
                 nama_pengurus: "",
                 nohp_pengurus: "",
-                id_tempat_ibadah: ""
+                id_tempat_ibadah: "",
+                ayat_ujian: document.getElementById('ayat_ujian_text').value || "-"
             };
 
             if (peran === 'Marbot Masjid' || peran === 'Imam Masjid') {
@@ -956,7 +1161,7 @@
             
             Swal.fire({
                 title: 'Memproses & Mengompresi Berkas...',
-                html: 'Sistem sedang mengompresi gambar Anda secara otomatis agar proses pengunggahan berlangsung cepat. Mohon tunggu...',
+                html: 'Sistem sedang memproses data dan berkas-berkas Anda. Mohon tunggu...',
                 allowOutsideClick: false,
                 didOpen: () => { Swal.showLoading(); }
             });
@@ -1006,6 +1211,7 @@
                     didOpen: () => { Swal.showLoading(); }
                 });
 
+                // Proses Gambar
                 for (const field of fileFields) {
                     const inputElement = document.getElementById(field.id);
                     if (inputElement && inputElement.files && inputElement.files.length > 0) {
@@ -1025,6 +1231,27 @@
                     }
                 }
 
+                // Proses Audio Rekaman (Jika Ada)
+                if (document.getElementById('rekaman_base64').value) {
+                    const base64Audio = document.getElementById('rekaman_base64').value;
+                    const mimeMatch = base64Audio.split(',')[0].match(/:(.*?);/);
+                    let ext = 'webm';
+                    if (mimeMatch) {
+                        const mime = mimeMatch[1];
+                        if (mime.includes('mp4')) ext = 'mp4';
+                        else if (mime.includes('ogg')) ext = 'ogg';
+                        else if (mime.includes('mpeg')) ext = 'mp3';
+                        else if (mime.includes('aac')) ext = 'aac';
+                        else if (mime.includes('wav')) ext = 'wav';
+                    }
+                    
+                    const cleanFileName = `Rekaman_Ujian_${dataText.peran.replace(/\s+/g, '_')}_${dataText.kecamatan.replace(/\s+/g, '_')}_${nama.replace(/\s+/g, '_')}.${ext}`;
+                    filesToSend['rekaman'] = {
+                        name: cleanFileName,
+                        base64: base64Audio
+                    };
+                }
+
                 const payload = {
                     ...dataText,
                     files: filesToSend
@@ -1035,7 +1262,7 @@
                     Swal.fire({
                         icon: 'success',
                         title: 'Tersimpan Secara Offline',
-                        html: 'Koneksi internet tidak terdeteksi. Data Anda beserta foto berhasil <b>disimpan dengan aman di dalam perangkat Anda</b>.<br><br>Data akan <b>otomatis terkirim ke server</b> segera setelah perangkat Anda terhubung kembali ke jaringan internet.',
+                        html: 'Koneksi internet tidak terdeteksi. Data Anda beserta foto dan rekaman berhasil <b>disimpan dengan aman di dalam perangkat Anda</b>.<br><br>Data akan <b>otomatis terkirim ke server</b> segera setelah perangkat Anda terhubung kembali ke jaringan internet.',
                         confirmButtonColor: '#f97316'
                     }).then(() => {
                         document.getElementById('registrationForm').reset();
